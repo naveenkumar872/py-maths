@@ -3058,19 +3058,23 @@ print(math.gamma(0.5) ** 2) # 3.14159... = pi
 print(math.erf(1))          # 0.8427  (normal distribution)`)}
    <p>Γ(n) = (n − 1)! extends the factorial to real numbers, and erf gives probabilities of the normal distribution.</p>`}
  ],
- example:`import math
+ example:`import math               # Load the math module so we can use sqrt, pi, etc.
 
-print("pi =", math.pi)
-print("e  =", math.e)
-print("sqrt(2) =", math.sqrt(2))
+print("pi =", math.pi)       # π constant (3.14159...)
+print("e  =", math.e)        # e constant (2.71828...)
+print("sqrt(2) =", math.sqrt(2))   # Square root of 2
+
+# Calculate circumference = 2πr with r = 7
 print("Circumference of a circle of radius 7:", round(2 * math.pi * 7, 4))
+
+# Check how close two famous approximations of π are
 print("22/7 is off by   ", abs(22 / 7 - math.pi))
 print("355/113 is off by", abs(355 / 113 - math.pi))`,
  predict:[
   { lv:'b', code:`import math
-print(math.sqrt(16) + math.floor(2.7))`, opts:['6','6.0','6.7'], ans:'6.0', why:'math.sqrt always returns a float, 4.0, and floor(2.7) is 2. 4.0 + 2 = 6.0.'},
+print(math.sqrt(16) + math.floor(2.7))`, opts:['6','6.0','6.7'], ans:'6.0', why:'sqrt returns a float — here 4.0. floor(2.7) gives 2 (the integer below 2.7). Adding them: 4.0 + 2 = 6.0.'},
   { lv:'a', code:`import math
-print(math.gamma(5))`, opts:['120.0','24.0','5.0'], ans:'24.0', why:'Γ(n) = (n − 1)!, so Γ(5) = 4! = 24. It is returned as a float.'}
+print(math.gamma(5))`, opts:['120.0','24.0','5.0'], ans:'24.0', why:'The gamma function is defined as Γ(n) = (n−1)!, so Γ(5) = 4! = 24. Python returns it as a float: 24.0.'}
  ],
  tryit:[
   { lv:'b', task:`Import math. Store the area of a circle of radius 3.5 in <code>area</code> and its circumference in <code>circ</code>, using <code>math.pi</code>.`,
@@ -3178,18 +3182,20 @@ for r in [2, 5, 8, 10]:
  ],
  example:`import math
 
-print("sqrt(50)   =", round(math.sqrt(50), 4))
-print("e^2        =", round(math.exp(2), 4))
-print("ln 10      =", round(math.log(10), 4))
-print("log10 1000 =", math.log10(1000))
-print("log2 1024  =", math.log2(1024))
+print("sqrt(50)   =", round(math.sqrt(50), 4))    # Square root of 50
+print("e^2        =", round(math.exp(2), 4))       # e to the power 2
+print("ln 10      =", round(math.log(10), 4))      # Natural log (ln) of 10
+print("log10 1000 =", math.log10(1000))            # Base-10 log: 10^? = 1000 → 3
+print("log2 1024  =", math.log2(1024))             # Base-2 log: 2^? = 1024 → 10
+
+# Solve 2^x = 50 → take log both sides: x = ln(50) / ln(2)
 x = math.log(50) / math.log(2)
 print("2^x = 50 gives x =", round(x, 4))`,
  predict:[
   { lv:'b', code:`import math
-print(math.log10(1000) + math.log2(8))`, opts:['6.0','11.0','1008.0'], ans:'6.0', why:'log₁₀1000 = 3 and log₂8 = 3, so the sum is 6.0.'},
+print(math.log10(1000) + math.log2(8))`, opts:['6.0','11.0','1008.0'], ans:'6.0', why:'log₁₀(1000) asks "10 to what power is 1000?" — answer is 3. log₂(8) asks "2 to what power is 8?" — answer is 3. So 3 + 3 = 6.0.'},
   { lv:'a', code:`import math
-print(math.log(math.e ** 3))`, opts:['3.0','20.09','1.0'], ans:'3.0', why:'math.log is the natural logarithm, so ln(e³) = 3.'}
+print(math.log(math.e ** 3))`, opts:['3.0','20.09','1.0'], ans:'3.0', why:'math.log is the natural logarithm (ln). By definition, ln(e^x) = x, so ln(e³) = 3.0. This is a core property of logarithms.'}
  ],
  tryit:[
   { lv:'b', task:`Solve 3ˣ = 200: store x in <code>x</code> using logarithms. Then a substance decays with k = 0.0866 per day: store its half-life ln 2 ÷ k in <code>half_life</code>.`,
@@ -3529,17 +3535,20 @@ print(digits(7), digits(1000), digits(2 ** 100))   # 1 4 31`)}
  ],
  example:`import math
 
+# Test floor, ceil, trunc, round on positive and negative decimals
 for x in [2.3, 2.7, -2.3, -2.7]:
     print(x, " floor", math.floor(x), " ceil", math.ceil(x), " trunc", math.trunc(x), " round", round(x))
-print("0.1 + 0.2 == 0.3 ?", 0.1 + 0.2 == 0.3)
-print("isclose?", math.isclose(0.1 + 0.2, 0.3))`,
+
+# Why you can't use == for decimals
+print("0.1 + 0.2 == 0.3 ?", 0.1 + 0.2 == 0.3)   # False! Rounding error
+print("isclose?", math.isclose(0.1 + 0.2, 0.3))  # True — close enough`,
  predict:[
   { lv:'b', code:`import math
-print(math.floor(-3.2), math.ceil(-3.2))`, opts:['-4 -3','-3 -4','-3 -3'], ans:'-4 -3', why:'floor goes down the number line to −4; ceil goes up to −3.'},
+print(math.floor(-3.2), math.ceil(-3.2))`, opts:['-4 -3','-3 -4','-3 -3'], ans:'-4 -3', why:'floor always goes down the number line (towards negative infinity) — so floor(−3.2) = −4. ceil goes up (towards positive infinity) — so ceil(−3.2) = −3.'},
   { lv:'a', code:`total = 0
 for i in range(10):
     total = total + 0.1
-print(total == 1)`, opts:['True','False','Error'], ans:'False', why:'Each addition of 0.1 rounds slightly, so total is 0.9999999999999999, not exactly 1.'}
+print(total == 1)`, opts:['True','False','Error'], ans:'False', why:'0.1 cannot be stored exactly in binary — it's stored as a tiny bit less. After 10 additions, the error accumulates to about 1e-15, so total is 0.9999999999999999, not exactly 1.0. This is why you must use isclose instead of ==.'}
  ],
  tryit:[
   { lv:'b', task:`250 answer booklets are packed in cartons of 12. Store in <code>cartons</code> the number of cartons needed for all of them, and in <code>full</code> the number of completely full cartons.`,
@@ -3761,19 +3770,28 @@ print(round(root, 4), steps)       # 0.5178`)}
  ],
  example:`import math
 
+# Check if 0.1 + 0.2 is close to 0.3 (they are, despite rounding)
 print("isclose(0.1 + 0.2, 0.3):", math.isclose(0.1 + 0.2, 0.3))
+
+# Default isclose can't compare tiny numbers with 0 — need abs_tol
 print("isclose(1e-10, 0):", math.isclose(1e-10, 0), "  with abs_tol:", math.isclose(1e-10, 0, abs_tol=1e-9))
+
+# Calculate distance between two 3D points
 print("Distance (1, 2, 3) to (4, 6, 3):", math.dist((1, 2, 3), (4, 6, 3)))
+
+# Multiply all numbers in a list (product)
 print("Product of 1 to 5:", math.prod([1, 2, 3, 4, 5]))
+
+# Use math.inf as a starting "largest value" to find minimum
 best = math.inf
 for x in [3.2, 1.7, 2.9]:
     best = min(best, x)
 print("Smallest value:", best)`,
  predict:[
   { lv:'b', code:`import math
-print(math.isclose(1e-12, 0))`, opts:['True','False','Error'], ans:'False', why:'The default test is relative, and anything relative to 0 is 0. Add abs_tol, for example abs_tol=1e-9, to compare with zero.'},
+print(math.isclose(1e-12, 0))`, opts:['True','False','Error'], ans:'False', why:'isclose checks if two numbers are close enough. The default test uses relative tolerance — it checks if |a−b| is small compared to max(|a|,|b|). When b=0, this ratio is undefined, so it returns False. To compare with 0, you must add abs_tol — for example, math.isclose(1e-12, 0, abs_tol=1e-9) would return True.'},
   { lv:'a', code:`import math
-print(math.dist((0, 0), (3, 4)), math.prod([2, 3, 4]))`, opts:['5.0 24','7 9','5.0 9'], ans:'5.0 24', why:'The distance from (0, 0) to (3, 4) is 5.0, and 2 × 3 × 4 = 24.'}
+print(math.dist((0, 0), (3, 4)), math.prod([2, 3, 4]))`, opts:['5.0 24','7 9','5.0 9'], ans:'5.0 24', why:'dist calculates the straight-line distance between two points — here √(3² + 4²) = 5.0. prod multiplies all numbers in a list — here 2 × 3 × 4 = 24.'}
  ],
  tryit:[
   { lv:'b', task:`Store the distance between the points (1, 1) and (4, 5) in <code>d</code> using <code>math.dist</code>, and 6! in <code>p</code> using <code>math.prod</code>.`,
