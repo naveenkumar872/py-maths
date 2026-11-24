@@ -3014,25 +3014,29 @@ const MT = [
  notes:'About 10 minutes. Show that Python itself knows only + − × ÷ and **. Everything else (square roots, logs, trig) comes from the math module. Recommend always writing import math at the top and math.name in the code.',
  slides:[
   {lv:'b', k:'Why a module?', t:'Extra mathematics lives in the math module', b:`
+   <p class="intro">Python by itself only knows basic arithmetic (+, -, *, /). For anything more — square roots, logarithms, trigonometry — you need to load the math module first with <code>import math</code>.</p>
    <div class="cols"><div>${lab('Without the module')}${cb(`print(sqrt(2))
 # NameError: name 'sqrt' is not defined`)}</div>
    <div>${lab('With the module')}${cb(`import math
 print(math.sqrt(2))     # 1.4142135623730951`)}</div></div>
    <p class="big">A <b>module</b> is a library of ready-made, tested functions. <code>import math</code> opens it once; then every tool is <code>math.something</code>.</p>`},
   {lv:'r', k:'See it happen', t:'Taking tools out of the toolbox', b: anim('mconst')},
-  {lv:'b', k:'Importing', t:'Three ways to import', b:
+  {lv:'b', k:'Importing', t:'Three ways to import', b:`
+   <p class="intro">There are three ways to bring the math module in. The first way (<code>import math</code>) is recommended — it makes it clear every time that the function comes from math.</p>` +
    tbl(['Code','Then you write','When to use'],[
     ['<code>import math</code>','<code>math.sqrt(2)</code>, <code>math.pi</code>','Recommended: always clear where a name comes from'],
     ['<code>from math import sqrt, pi</code>','<code>sqrt(2)</code>, <code>pi</code>','Short formulas with a few functions'],
     ['<code>import math as m</code>','<code>m.sqrt(2)</code>','Rarely needed for math']])},
-  {lv:'b', k:'Constants', t:'Mathematical constants, ready to use', b:
+  {lv:'b', k:'Constants', t:'Mathematical constants, ready to use', b:`
+   <p class="intro">The math module has the most important mathematical constants built in — no need to type 3.14159 yourself. Python stores them to 16 significant digits, far more accurate than any textbook approximation.</p>` +
    tbl(['Constant','Python','Value'],[
     ['π','<code>math.pi</code>','3.141592653589793'],
     ['e','<code>math.e</code>','2.718281828459045'],
     ['τ = 2π','<code>math.tau</code>','6.283185307179586'],
     ['∞','<code>math.inf</code>','inf (larger than every number)'],
     ['"not a number"','<code>math.nan</code>','nan']])},
-  {lv:'b', k:'What is inside', t:'The main groups of tools', b:
+  {lv:'b', k:'What is inside', t:'The main groups of tools', b:`
+   <p class="intro">The math module is organised into groups. You will use powers and trig most often — the table below shows which lesson covers each group.</p>` +
    tbl(['Group','Examples','Lesson'],[
     ['Powers, roots and logarithms','<code>sqrt, exp, log, log10, log2</code>','2'],
     ['Trigonometry','<code>sin, cos, tan, radians, atan2, hypot</code>','3'],
@@ -3047,11 +3051,13 @@ print(math.sqrt(2))     # 1.4142135623730951`)}</div></div>
     ['<code>math.Pi</code>','AttributeError: names are case-sensitive, use math.pi'],
     ['Saving your own file as <code>math.py</code>','Python imports your file instead of the real module']])},
   {lv:'a', k:'Advanced', t:'How accurate is math.pi?', b:`
+   <p class="intro">math.pi holds π to 16 significant digits — more than enough for any engineering calculation. The code below checks how close the two most famous manual approximations are.</p>
    ${cb(`import math
 print(abs(22 / 7 - math.pi))       # 0.00126   (Archimedes)
 print(abs(355 / 113 - math.pi))    # 2.7e-07   (Zu Chongzhi)`)}
    <p>math.pi is the closest value a computer float can hold: about 16 significant digits. For more digits you need special libraries (Day 5: SymPy).</p>`},
   {lv:'a', k:'Advanced', t:'Special functions: gamma and erf', b:`
+   <p class="intro">The gamma function extends factorial to non-integers (Γ(5) = 4!), and erf gives the probability under a normal curve — both appear in engineering and statistics exams.</p>
    ${cb(`import math
 print(math.gamma(5))        # 24.0 = 4!
 print(math.gamma(0.5) ** 2) # 3.14159... = pi
@@ -3137,6 +3143,7 @@ print("Error after", checks, "terms:", [round(e, 6) for e in errors])`,
  notes:'About 12 minutes. The key trap: math.log is the natural logarithm (ln), not log base 10. Then solve exponential equations with logarithms, which leads directly into Newton\'s law of cooling, a first-order ODE application.',
  slides:[
   {lv:'b', k:'Roots and powers', t:'Square roots and powers', b:`
+   <p class="intro"><code>math.sqrt</code> gives the square root as a decimal. For powers, use <code>**</code> — it is faster and gives an exact integer when both numbers are integers.</p>
    ${cb(`import math
 print(math.sqrt(50))      # 7.0710678...
 print(math.pow(2, 10))    # 1024.0 (always a float)
@@ -3144,7 +3151,8 @@ print(2 ** 10)            # 1024   (exact integer)
 print(math.isqrt(50))     # 7      (integer square root)`)}
    <p class="big">Use <code>**</code> for powers and <code>math.sqrt</code> for square roots.</p>`},
   {lv:'r', k:'See it happen', t:'Logarithms make a scale: pH', b: anim('ph')},
-  {lv:'b', k:'exp and log', t:'Exponentials and logarithms', b:
+  {lv:'b', k:'exp and log', t:'Exponentials and logarithms', b:`
+   <p class="intro">The most important thing to remember: <code>math.log(x)</code> is the <b>natural log (ln)</b>, not log base 10. For log base 10, use <code>math.log10</code>.</p>` +
    tbl(['Mathematics','Python','Example'],[
     ['eˣ','<code>math.exp(x)</code>','math.exp(1) = 2.718…'],
     ['ln x (natural log)','<code>math.log(x)</code>','math.log(math.e) = 1.0'],
@@ -3152,6 +3160,7 @@ print(math.isqrt(50))     # 7      (integer square root)`)}
     ['log₂ x','<code>math.log2(x)</code>','math.log2(1024) = 10.0'],
     ['log_b x','<code>math.log(x, b)</code>','math.log(81, 3) = 4.0']])},
   {lv:'b', k:'Solving equations', t:'Exponential equations with logarithms', b:`
+   <p class="intro">To solve 2^x = 50, take log of both sides: x = ln(50) ÷ ln(2). To find doubling time in a growth model A = Pe^(rt), rearrange to t = ln(2) ÷ r.</p>
    ${cb(`import math
 # 2^x = 50   ->   x = ln 50 / ln 2
 x = math.log(50) / math.log(2)
@@ -3167,6 +3176,7 @@ print(round(t, 2))          # 8.66 years`)}`},
     ['<code>math.log(0)</code>','ValueError: math domain error'],
     ['<code>(-8) ** (1/3)</code> expecting −2','A complex number; use -(8 ** (1/3)) for real cube roots of negatives']])},
   {lv:'a', k:'Advanced', t:'Growth and decay models', b:`
+   <p class="intro">N = N₀e^(kt) describes bacterial growth (k positive) or radioactive decay (k negative). To find when N reaches a target, rearrange using ln.</p>
    ${cb(`import math
 N0, k = 1000, 0.25            # bacteria, growth rate per hour
 for t in [0, 2, 4, 8]:
@@ -3174,6 +3184,7 @@ for t in [0, 2, 4, 8]:
 print("Doubling time:", round(math.log(2) / k, 3), "hours")`)}
    <p>Every model N = N₀e^(kt) is solved for t with a logarithm: t = ln(N/N₀) ÷ k.</p>`},
   {lv:'a', k:'Advanced', t:'Rule of 70 versus the exact doubling time', b:`
+   <p class="intro">The rule of 70 says money doubles in roughly 70 ÷ r years at r% interest. The code shows how close this estimate is compared to the exact answer from logarithms.</p>
    ${cb(`import math
 for r in [2, 5, 8, 10]:
     exact = math.log(2) / math.log(1 + r / 100)
@@ -3492,7 +3503,8 @@ print("Check: total probability =", round(math.fsum(P), 10))`,
  id:'m5', title:'Rounding and floating-point checks', sub:'floor, ceil, trunc, isclose and fsum',
  notes:'About 10 minutes. Two practical messages: choose the right rounding (ceil for "enough", floor for "complete groups"), and never compare decimal results with ==. The error-bound problem shows ceil doing real work in numerical analysis.',
  slides:[
-  {lv:'b', k:'Rounding', t:'floor, ceil, trunc and round', b:
+  {lv:'b', k:'Rounding', t:'floor, ceil, trunc and round', b:`
+   <p class="intro">floor always rounds down, ceil always rounds up, trunc drops the decimal towards zero, and round goes to the nearest integer. They behave differently for negative numbers — the table shows exactly what each gives.</p>` +
    tbl(['x','math.floor(x) ⌊x⌋','math.ceil(x) ⌈x⌉','math.trunc(x)','round(x)'],[
     ['2.3','2','3','2','2'],
     ['2.7','2','3','2','3'],
@@ -3501,12 +3513,14 @@ print("Check: total probability =", round(math.fsum(P), 10))`,
     ['2.5','2','3','2','2 (to even!)']])},
   {lv:'r', k:'See it happen', t:'How many buses? Rounding up with ceil', b: anim('buses')},
   {lv:'b', k:'Floating point', t:'Why 0.1 + 0.2 is not exactly 0.3', b:`
+   <p class="intro">Computers store numbers in binary (base 2), and most decimal fractions like 0.1 cannot be stored exactly — just like 1/3 cannot be written exactly in decimal. This causes tiny errors that make == comparisons fail.</p>
    ${cb(`import math
 print(0.1 + 0.2)                     # 0.30000000000000004
 print(0.1 + 0.2 == 0.3)              # False
 print(math.isclose(0.1 + 0.2, 0.3))  # True`)}
    <p class="big">Computers store decimals in binary, so most decimals are slightly rounded. Compare with <code>math.isclose</code>, never with <code>==</code>.</p>`},
-  {lv:'b', k:'isclose', t:'Relative and absolute tolerance', b:
+  {lv:'b', k:'isclose', t:'Relative and absolute tolerance', b:`
+   <p class="intro">isclose checks if two numbers are close enough to be treated as equal. Use <code>abs_tol</code> when one of the numbers might be zero — otherwise the default relative check always returns False for zero.</p>` +
    tbl(['Call','Meaning'],[
     ['<code>math.isclose(a, b)</code>','equal to about 9 significant digits (rel_tol = 1e-9)'],
     ['<code>math.isclose(a, b, rel_tol=1e-4)</code>','within 0.01% of each other'],
@@ -3518,6 +3532,7 @@ print(math.isclose(0.1 + 0.2, 0.3))  # True`)}
     ['<code>round(2.5)</code> expecting 3','2: Python rounds halves to the even number'],
     ['<code>int(-2.7)</code> expecting −3','−2: int() truncates towards zero; use math.floor']])},
   {lv:'a', k:'Advanced', t:'Adding many decimals: math.fsum', b:`
+   <p class="intro">When you add many decimal numbers in a loop, the tiny rounding errors accumulate. fsum avoids this by tracking the errors separately and rounding only once at the end.</p>
    ${cb(`import math
 total = 0
 for i in range(10):
@@ -3526,6 +3541,7 @@ print(total)                    # 0.9999999999999999
 print(math.fsum([0.1] * 10))    # 1.0   (exactly rounded)`)}
    <p>Each + rounds a little; the errors add up. fsum tracks them and rounds only once at the end.</p>`},
   {lv:'a', k:'Advanced', t:'Counting digits with floor and log10', b:`
+   <p class="intro">The number of digits in n equals ⌊log₁₀(n)⌋ + 1. This is a neat trick that avoids converting the number to a string just to count its digits.</p>
    ${cb(`import math
 def digits(n):
     return math.floor(math.log10(n)) + 1
@@ -3726,6 +3742,7 @@ print("Height above the lowest point:", heights)`,
  notes:'About 12 minutes. Bring Sections 02 and 03 together: functions plus math tools give clean, general numerical methods. The Newton–Raphson problem on x log₁₀ x = 1.2 is a standard exam question that needs log10 and its derivative.',
  slides:[
   {lv:'b', k:'Stopping a method', t:'Stop when two answers are close enough', b:`
+   <p class="intro">Every iterative method (bisection, Newton-Raphson, Euler) needs a stopping condition. Use <code>math.isclose</code> to stop when two successive answers are nearly equal — not when you have run a fixed number of steps.</p>
    ${cb(`import math
 x = 1.0
 while True:
@@ -3736,13 +3753,15 @@ while True:
 print(round(x_new, 6))               # 0.739085`)}
    <p class="big"><code>math.isclose</code> is the natural stopping test for every iterative method.</p>`},
   {lv:'r', k:'See it happen', t:'Auto-checking answers with isclose', b: anim('checker')},
-  {lv:'b', k:'More tools', t:'dist, prod, fsum and inf', b:
+  {lv:'b', k:'More tools', t:'dist, prod, fsum and inf', b:`
+   <p class="intro">These four tools solve common problems in numerical methods: measuring distance, multiplying a list, summing accurately, and initialising a search with a value that is guaranteed to be beaten by any real number.</p>` +
    tbl(['Tool','Example','Result'],[
     ['Distance between points','<code>math.dist((1, 2, 3), (4, 6, 3))</code>','5.0'],
     ['Product of a list','<code>math.prod([1, 2, 3, 4, 5])</code>','120'],
     ['Accurate sum','<code>math.fsum([0.1] * 10)</code>','1.0'],
     ['"Larger than anything"','<code>best = math.inf</code>, then <code>best = min(best, x)</code>','smallest value']])},
-  {lv:'b', k:'Maths and Python', t:'Transcendental equations', b:
+  {lv:'b', k:'Maths and Python', t:'Transcendental equations', b:`
+   <p class="intro">A transcendental equation like x log₁₀x = 1.2 cannot be solved algebraically — you need a numerical method. The table shows how to write f(x) and its derivative f\'(x) in Python for Newton-Raphson.</p>` +
    tbl(['Equation','f(x)','f′(x)'],[
     ['x log₁₀x = 1.2','<code>x * math.log10(x) - 1.2</code>','<code>math.log10(x) + 1 / math.log(10)</code>'],
     ['cos x = x eˣ','<code>math.cos(x) - x * math.exp(x)</code>','<code>-math.sin(x) - math.exp(x) - x * math.exp(x)</code>'],
@@ -3753,6 +3772,7 @@ print(round(x_new, 6))               # 0.739085`)}
     ['Forgetting that d/dx log₁₀x = 1/(x ln 10)','Newton–Raphson converges slowly or wrongly'],
     ['An iterate becomes negative inside log10','ValueError: math domain error; choose a better x₀']])},
   {lv:'a', k:'Advanced', t:'A general Newton–Raphson function', b:`
+   <p class="intro">Newton-Raphson finds a root by repeatedly applying x_new = x − f(x)/f\'(x). This function takes f and f\' as arguments, so the same code solves any equation — just pass in a different formula.</p>
    ${cb(`import math
 def newton(f, df, x0, tol=1e-8, max_iter=50):
     x = x0
