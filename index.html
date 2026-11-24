@@ -3185,10 +3185,10 @@ for r in [2, 5, 8, 10]:
 print("sqrt(50)   =", round(math.sqrt(50), 4))    # Square root of 50
 print("e^2        =", round(math.exp(2), 4))       # e to the power 2
 print("ln 10      =", round(math.log(10), 4))      # Natural log (ln) of 10
-print("log10 1000 =", math.log10(1000))            # Base-10 log: 10^? = 1000 → 3
-print("log2 1024  =", math.log2(1024))             # Base-2 log: 2^? = 1024 → 10
+print("log10 1000 =", math.log10(1000))            # Base-10 log: 10^? = 1000, answer is 3
+print("log2 1024  =", math.log2(1024))             # Base-2 log: 2^? = 1024, answer is 10
 
-# Solve 2^x = 50 → take log both sides: x = ln(50) / ln(2)
+# Solve 2^x = 50: take log both sides, x = ln(50) / ln(2)
 x = math.log(50) / math.log(2)
 print("2^x = 50 gives x =", round(x, 4))`,
  predict:[
@@ -3548,7 +3548,7 @@ print(math.floor(-3.2), math.ceil(-3.2))`, opts:['-4 -3','-3 -4','-3 -3'], ans:'
   { lv:'a', code:`total = 0
 for i in range(10):
     total = total + 0.1
-print(total == 1)`, opts:['True','False','Error'], ans:'False', why:'0.1 cannot be stored exactly in binary — it's stored as a tiny bit less. After 10 additions, the error accumulates to about 1e-15, so total is 0.9999999999999999, not exactly 1.0. This is why you must use isclose instead of ==.'}
+print(total == 1)`, opts:['True','False','Error'], ans:'False', why:'0.1 cannot be stored exactly in binary — it is stored as a tiny bit less. After 10 additions, the error accumulates to about 1e-15, so total is 0.9999999999999999, not exactly 1.0. This is why isclose must be used instead of ==.'}
  ],
  tryit:[
   { lv:'b', task:`250 answer booklets are packed in cartons of 12. Store in <code>cartons</code> the number of cartons needed for all of them, and in <code>full</code> the number of completely full cartons.`,
