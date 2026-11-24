@@ -3602,6 +3602,7 @@ print("Within tolerance?", math.isclose(T, exact, abs_tol=eps))`
  notes:'About 10 minutes. Hyperbolic functions appear in the engineering syllabus through catenaries, transmission lines and heat flow. Show cosh and sinh as combinations of eˣ and e⁻ˣ, then the cable problem.',
  slides:[
   {lv:'b', k:'Hyperbolic functions', t:'Built from eˣ and e⁻ˣ', b:`
+   <p class="intro">Hyperbolic functions are just combinations of eˣ and e⁻ˣ — they look like sin and cos but are built from exponentials, not circles. Python gives them directly as <code>math.sinh</code>, <code>math.cosh</code>, <code>math.tanh</code>.</p>
    <p class="formula">sinh x = (eˣ − e⁻ˣ)/2 &nbsp;&nbsp; cosh x = (eˣ + e⁻ˣ)/2 &nbsp;&nbsp; tanh x = sinh x / cosh x</p>
    ${cb(`import math
 x = 1.2
@@ -3614,6 +3615,7 @@ print(math.cosh(x), (math.exp(x) + math.exp(-x)) / 2)   # the same value`)}`},
     ['sinh⁻¹x, cosh⁻¹x, tanh⁻¹x','<code>math.asinh(x)</code>, <code>math.acosh(x)</code>, <code>math.atanh(x)</code>'],
     ['eˣ − 1 for very small x','<code>math.expm1(x)</code> (more accurate)']])},
   {lv:'b', k:'Identities', t:'cosh²x − sinh²x = 1', b:`
+   <p class="intro">Just like sin²θ + cos²θ = 1 for circular trig, hyperbolic functions have their own identity: cosh²x − sinh²x = 1 for every value of x. The code below verifies it.</p>
    ${cb(`import math
 for x in [0, 0.5, 1, 2, 5]:
     print(x, math.cosh(x) ** 2 - math.sinh(x) ** 2)`)}
@@ -3624,6 +3626,7 @@ for x in [0, 0.5, 1, 2, 5]:
     ['<code>math.acosh(0.5)</code>','ValueError: cosh x is never less than 1'],
     ['<code>math.e ** x</code> instead of <code>math.exp(x)</code>','Works, but math.exp is faster and slightly more accurate']])},
   {lv:'a', k:'Advanced', t:'Series check: cosh x = Σ x²ᵏ/(2k)!', b:`
+   <p class="intro">cosh x can be written as an infinite sum of terms — this is its Taylor series. The code adds up 10 terms and shows it matches Python's built-in <code>math.cosh</code> exactly.</p>
    ${cb(`import math
 x = 1
 s = sum([x ** (2 * k) / math.factorial(2 * k) for k in range(10)])
@@ -3636,17 +3639,19 @@ for x in [-3, -1, 0, 1, 3]:
  ],
  example:`import math
 
+# sinh, cosh, tanh at x = 1.2
 x = 1.2
-print("sinh =", round(math.sinh(x), 4), "  cosh =", round(math.cosh(x), 4), "  tanh =", round(math.tanh(x), 4))
-print("cosh from e^x:", round((math.exp(x) + math.exp(-x)) / 2, 4))
-print("cosh^2 - sinh^2 =", round(math.cosh(x) ** 2 - math.sinh(x) ** 2, 10))
-for t in [1, 2, 3, 5]:
-    print("After", t, "RC the capacitor is", round(100 * (1 - math.exp(-t)), 1), "% charged")`,
+print("sinh =", round(math.sinh(x), 4))   # 1.5095
+print("cosh =", round(math.cosh(x), 4))   # 1.8107
+print("tanh =", round(math.tanh(x), 4))   # 0.8337
+
+# Verify cosh two ways — both give the same answer
+print("cosh from formula =", round((math.exp(x) + math.exp(-x)) / 2, 4))`,
  predict:[
   { lv:'b', code:`import math
-print(math.cosh(0), math.sinh(0))`, opts:['1.0 0.0','0.0 1.0','1.0 1.0'], ans:'1.0 0.0', why:'cosh 0 = (1 + 1)/2 = 1 and sinh 0 = (1 − 1)/2 = 0.'},
+print(math.cosh(0), math.sinh(0))`, opts:['1.0 0.0','0.0 1.0','1.0 1.0'], ans:'1.0 0.0', why:'Plug x = 0 into the formulas: cosh(0) = (e⁰ + e⁰)/2 = (1+1)/2 = 1, and sinh(0) = (e⁰ − e⁰)/2 = 0. These are the starting values, just like cos(0) = 1 and sin(0) = 0.'},
   { lv:'a', code:`import math
-print(round(math.tanh(10), 4))`, opts:['10.0','1.0','0.0'], ans:'1.0', why:'tanh x approaches 1 as x grows; at x = 10 it is 0.99999999587…, which rounds to 1.0.'}
+print(round(math.tanh(10), 4))`, opts:['10.0','1.0','0.0'], ans:'1.0', why:'tanh squashes any number into the range (−1, 1). For large x it gets very close to 1 — at x = 10 it is 0.9999… which rounds to 1.0. This is why tanh is used in neural networks as an activation function.'}
  ],
  tryit:[
   { lv:'b', task:`A radioactive sample follows N = 500 e^(−0.04t). Store the amount after t = 10 days in <code>N10</code> and the half-life ln 2 ÷ 0.04 in <code>half_life</code>.`,
@@ -3658,17 +3663,19 @@ N10 = 500 * math.exp(-0.04 * 10)
 half_life = math.log(2) / 0.04
 print(round(N10, 2), round(half_life, 2))`,
     tests:[['N10 is about 335.16','abs(N10 - 335.16002301781964) < 1e-9'],['half_life is about 17.33 days','abs(half_life - 17.328679513998633) < 1e-9']], must:[['uses math.exp', /math\.exp|\bexp\s*\(/]] },
-  { lv:'a', task:`Define <code>cosh_series(x, terms)</code> returning Σ x²ᵏ/(2k)! for k = 0 to terms − 1, using <code>math.factorial</code>.`,
+  { lv:'a', task:`A hanging cable takes the shape of a catenary. At a point x = 2, the height is given by <code>c * math.cosh(x / c)</code> with c = 10. Store the height in <code>h</code> and verify the identity by storing <code>math.cosh(x/c)**2 - math.sinh(x/c)**2</code> in <code>identity</code> (it should equal 1).`,
     starter:`import math
+c = 10
+x = 2
 # Write your code below
-`, hint:'return sum([x ** (2 * k) / math.factorial(2 * k) for k in range(terms)])',
+`, hint:'h = c * math.cosh(x / c) and identity = math.cosh(x/c)**2 - math.sinh(x/c)**2',
     sol:`import math
-
-def cosh_series(x, terms):
-    return sum([x ** (2 * k) / math.factorial(2 * k) for k in range(terms)])
-
-print(cosh_series(1, 10), math.cosh(1))`,
-    tests:[['cosh_series(1, 10) matches cosh 1','abs(cosh_series(1, 10) - 1.5430806348152437) < 1e-12'],['cosh_series(2, 15) matches cosh 2','abs(cosh_series(2, 15) - 3.7621956910836314) < 1e-10'],['one term gives 1','cosh_series(3, 1) == 1']], must:[['uses math.factorial', /factorial/]] }
+c = 10
+x = 2
+h = c * math.cosh(x / c)
+identity = math.cosh(x / c) ** 2 - math.sinh(x / c) ** 2
+print(round(h, 4), round(identity, 10))`,
+    tests:[['h is correct','abs(h - 10 * math.cosh(0.2)) < 1e-9'],['identity is 1','abs(identity - 1) < 1e-10']], must:[['uses math.cosh', /math\.cosh/]] }
  ],
  maths:{ app:{ t:'Logistic growth: when exponential growth meets a limit', intro:'P(t) = K ÷ (1 + A e^(−rt)) starts like exponential growth and levels off at the carrying capacity K.',
    code:`import math
