@@ -354,6 +354,25 @@ details.qa summary{cursor:pointer;font-weight:500}
 details.qa div{margin-top:8px;color:var(--muted)}
 .rwbanner{display:inline-block;font-size:.72em;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:var(--hl-bg);color:var(--hl);margin-bottom:10px}
 
+/* explain panel */
+.expanel{position:fixed;top:0;right:0;width:min(420px,92vw);height:100vh;background:var(--panel);border-left:1px solid var(--line);box-shadow:-4px 0 24px rgba(0,0,0,.13);z-index:70;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .3s cubic-bezier(.3,.7,.3,1)}
+.expanel.open{transform:none}
+.expanel-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line);background:var(--acc-bg)}
+.expanel-head h3{margin:0;font-family:var(--serif);font-size:1.1em;color:var(--acc-ink);flex:1}
+.expanel-close{background:none;border:none;font-size:1.3em;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:6px}
+.expanel-close:hover{background:var(--soft);color:var(--ink)}
+.expanel-body{flex:1;overflow-y:auto;padding:18px}
+.expanel-scrim{display:none;position:fixed;inset:0;z-index:65;background:rgba(15,23,30,.25)}
+.expanel-scrim.open{display:block}
+.estep{display:flex;gap:12px;margin-bottom:18px;align-items:flex-start}
+.estep-num{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;font-size:.78em;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.estep-body{flex:1}
+.estep-title{font-weight:600;font-size:.92em;margin-bottom:4px;color:var(--ink)}
+.estep-text{font-size:.9em;color:var(--muted);line-height:1.6}
+.estep-formula{font-family:var(--mono);background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:.85em;margin:6px 0;display:block}
+.explain-btn{display:inline-flex;align-items:center;gap:6px;font-size:.82em;padding:5px 12px;border-radius:6px;background:var(--acc-bg);border:1px solid var(--acc);color:var(--acc-ink);cursor:pointer;margin-bottom:14px;font-weight:500}
+.explain-btn:hover{background:var(--acc);color:#fff}
+
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(15,18,22,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;animation:fade .2s}
 .modal[hidden]{display:none}
@@ -392,6 +411,14 @@ details.qa div{margin-top:8px;color:var(--muted)}
 <div class="app">
   <aside id="side"></aside>
   <main id="main"></main>
+</div>
+<div class="expanel-scrim" id="epScrim"></div>
+<div class="expanel" id="epPanel" role="dialog" aria-modal="true" aria-label="Formula explanation">
+  <div class="expanel-head">
+    <h3 id="epTitle">Explain this</h3>
+    <button class="expanel-close" id="epClose" aria-label="Close">✕</button>
+  </div>
+  <div class="expanel-body" id="epBody"></div>
 </div>
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mT">
   <div class="mbox"><h3 id="mT"></h3><p id="mM"></p><div class="row"><button class="ghost" id="mNo">Cancel</button><button class="pri" id="mYes">OK</button></div></div>
@@ -5224,8 +5251,140 @@ function renderSide(){
 }
 function setMenu(open){ document.body.classList.toggle('menu', open); const b = document.getElementById('menuBtn'); if (b) b.setAttribute('aria-expanded', open); }
 document.getElementById('menuBtn').addEventListener('click', () => setMenu(!document.body.classList.contains('menu')));
-document.getElementById('scrim').addEventListener('click', () => setMenu(false));
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu')) setMenu(false); });
+const EXPLAIN = {
+ m1:[
+  {t:'Circumference and π approximations', steps:[
+   {title:'Formula: C = 2πr', text:'Circumference = 2 × pi × radius. Here r = 7, so C = 2 × 3.14159 × 7 ≈ 43.98 units.', formula:'C = 2 × π × 7 ≈ 43.9823'},
+   {title:'How close is 22/7?', text:'22/7 is the fraction most people use for π. It is off by about 0.00126 — good for 2 decimal places but not more.', formula:'|22/7 − π| ≈ 0.00126'},
+   {title:'How close is 355/113?', text:'355/113 is a much better approximation discovered by Chinese mathematician Zu Chongzhi. It is accurate to 6 decimal places — 100 times closer than 22/7.', formula:'|355/113 − π| ≈ 0.00000027'}
+  ]},
+  {t:'Three import styles', steps:[
+   {title:'import math (recommended)', text:'math.sqrt(16) is the clearest — anyone reading the code immediately knows sqrt comes from the math module.', formula:'math.sqrt(16) = sqrt(16) = m.sqrt(16) = 4'}
+  ]},
+  {t:'math.inf in action', steps:[
+   {title:'What is math.inf?', text:'math.inf represents infinity — a value larger than every real number. It is used as a starting "worst value" when searching for a minimum.', formula:'math.inf > any number'},
+   {title:'Finding the minimum', text:'Start best = infinity. For each x, if x is smaller than best, update best. After the loop, best holds the smallest value seen.', formula:'min(inf, 7.5) = 7.5 → min(7.5, 3.2) = 3.2 → smallest = 3.2'}
+  ]}
+ ],
+ m2:[
+  {t:'sqrt, exp and log', steps:[
+   {title:'Square root and e²', text:'math.sqrt(50) gives the square root of 50 as a decimal. math.exp(2) raises e (≈2.718) to the power 2.', formula:'sqrt(50) ≈ 7.0711,  e² ≈ 7.3891'},
+   {title:'Three types of logarithm', text:'math.log(x) is the NATURAL log (ln) — base e. math.log10(x) is base 10. math.log2(x) is base 2. log₁₀(1000)=3 because 10³=1000.', formula:'ln(10) ≈ 2.3026,  log₁₀(1000) = 3,  log₂(1024) = 10'},
+   {title:'Solving 2^x = 50', text:'Take log of both sides: x·ln(2) = ln(50), so x = ln(50)/ln(2). This works for any base because ln(a^x) = x·ln(a).', formula:'x = ln(50) / ln(2) ≈ 5.6439'}
+  ]},
+  {t:'Solving exponential equations', steps:[
+   {title:'3^x = 81', text:'Take ln of both sides: x = ln(81)/ln(3). Since 3⁴ = 81, x = 4 exactly.', formula:'x = ln(81) / ln(3) = 4'},
+   {title:'Doubling time: e^(0.07t) = 2', text:'Take ln of both sides: 0.07t = ln(2), so t = ln(2)/0.07 ≈ 9.9 years. This is the time to double money at 7% continuous interest.', formula:'t = ln(2) / 0.07 ≈ 9.9'},
+   {title:'log₇(343) = 3', text:'This asks: 7 to what power gives 343? Since 7³ = 343, the answer is 3.', formula:'log₇(343) = 3  because 7³ = 343'}
+  ]},
+  {t:'Logarithmic scale: decibels', steps:[
+   {title:'The decibel formula', text:'L = 10 × log₁₀(I / I₀) where I₀ = 10⁻¹² W/m² is the threshold of hearing. Each 10× increase in intensity adds 10 dB.', formula:'L = 10 × log₁₀(I / I₀)'},
+   {title:'Whisper: I = 10⁻¹⁰', text:'10 × log₁₀(10⁻¹⁰ / 10⁻¹²) = 10 × log₁₀(10²) = 10 × 2 = 20 dB.', formula:'10 × log₁₀(10²) = 20 dB'},
+   {title:'Jet engine: I = 10²', text:'10 × log₁₀(10² / 10⁻¹²) = 10 × log₁₀(10¹⁴) = 10 × 14 = 140 dB.', formula:'10 × log₁₀(10¹⁴) = 140 dB'}
+  ]}
+ ],
+ m3:[
+  {t:'Radians and trig values', steps:[
+   {title:'Converting degrees to radians', text:'Python\'s trig functions need radians, not degrees. The formula is: radians = degrees × π/180. So 30° = 30 × π/180 = π/6 ≈ 0.5236.', formula:'radians = degrees × π / 180'},
+   {title:'Standard trig values', text:'sin(30°) = 0.5, cos(60°) = 0.5, sin(45°) = 1/√2 ≈ 0.7071. These are the values from your trig table — always convert to radians first.', formula:'sin(30°)=0.5,  cos(60°)=0.5,  sin(45°)≈0.7071'},
+   {title:'Point (3,4): distance and angle', text:'The distance from origin to (3,4) = √(3²+4²) = √25 = 5. The angle = atan2(4,3) ≈ 53.13°. This is a 3-4-5 right triangle.', formula:'r = √(9+16) = 5,  θ = atan2(4,3) ≈ 53.13°'}
+  ]},
+  {t:'Why atan2 instead of atan', steps:[
+   {title:'The problem with plain atan', text:'atan(y/x) only gives angles between -90° and +90°. It cannot tell which quadrant the point is in because (-1,1) and (1,-1) give the same y/x ratio.', formula:'atan(1/-1) = atan(-1/1) = -45° — both give same wrong answer'},
+   {title:'Point (-1,1): 2nd quadrant', text:'atan(-1) gives -45° but the point is in the 2nd quadrant (x negative, y positive), so the correct angle is 135°. atan2 knows x is negative and gives 135°.', formula:'atan2(1, -1) = 135°  (correct)'},
+   {title:'Point (-1,-1): 3rd quadrant', text:'atan(1) gives 45° but the point is in the 3rd quadrant, so the correct angle is -135°. Always use atan2(y, x) for correct quadrant detection.', formula:'atan2(-1, -1) = -135°  (correct)'}
+  ]},
+  {t:'Resultant of two forces', steps:[
+   {title:'Resultant magnitude formula', text:'When two forces F1 and F2 act at angle θ between them, the resultant R = √(F1² + F2² + 2·F1·F2·cosθ). This comes from the cosine rule.', formula:'R = √(F1² + F2² + 2·F1·F2·cosθ)'},
+   {title:'Calculating R', text:'F1=30, F2=40, θ=60°, cos(60°)=0.5. So R = √(900 + 1600 + 2×30×40×0.5) = √(900+1600+1200) = √3700 ≈ 60.83 N.', formula:'R = √(900 + 1600 + 1200) = √3700 ≈ 60.83 N'},
+   {title:'Angle of resultant', text:'tanα = F2·sin(θ) / (F1 + F2·cos(θ)) = 40×sin(60°) / (30 + 40×0.5) = 34.64/50. So α = atan(34.64/50) ≈ 34.72°.', formula:'tan α = 34.64 / 50  →  α ≈ 34.72°'}
+  ]}
+ ],
+ m4:[
+  {t:'Combinations, permutations and GCD', steps:[
+   {title:'Combinations vs Permutations', text:'comb(10,3)=120: choose 3 from 10 where order does NOT matter (like selecting a committee). perm(10,3)=720: arrange 3 from 10 where order DOES matter (like awarding 1st, 2nd, 3rd place).', formula:'10C3 = 10!/(3!×7!) = 120,   10P3 = 10!/7! = 720'},
+   {title:'GCD: greatest common divisor', text:'gcd(84,120)=12 means 12 is the largest number that divides both 84 and 120 exactly. Used to simplify fractions: 84/120 = 7/10.', formula:'gcd(84,120) = 12'},
+   {title:'LCM from GCD', text:'lcm(a,b) = a×b / gcd(a,b). So lcm(84,120) = 84×120/12 = 10080/12 = 840. This is the smallest number both 84 and 120 divide into.', formula:'lcm(84,120) = 84×120/12 = 840'}
+  ]},
+  {t:'Binomial theorem and Pascal triangle', steps:[
+   {title:'Binomial expansion', text:'(a+b)^n expands into a sum where each term uses a row of Pascal\'s triangle as coefficients. Row n of the triangle gives the coefficients of (a+b)^n.', formula:'(a+b)^n = Σ C(n,r) × a^(n-r) × b^r'},
+   {title:'Row 6 of Pascal\'s triangle', text:'The coefficients of (a+b)^6 are 1,6,15,20,15,6,1 — row 6 of Pascal\'s triangle. They always add to 2^6 = 64. Each coefficient = previous row left + previous row right.', formula:'1+6+15+20+15+6+1 = 64 = 2^6'},
+   {title:'Finding the x³ term in (2+x)^5', text:'The x³ term uses r=3: C(5,3)×2^(5-3)×x^3 = 10×4×x³ = 40x³. The coefficient is 40.', formula:'C(5,3) × 2² = 10 × 4 = 40'}
+  ]},
+  {t:'Euclid\'s algorithm for GCD', steps:[
+   {title:'How Euclid\'s algorithm works', text:'To find gcd(252,198): divide the larger by the smaller, keep the remainder. Repeat until remainder is 0. The last non-zero remainder is the GCD.', formula:'gcd(a,b): divide a by b, replace a with b and b with remainder, repeat'},
+   {title:'Step by step', text:'252 = 1×198 + 54 → 198 = 3×54 + 36 → 54 = 1×36 + 18 → 36 = 2×18 + 0. Stop. GCD = 18.', formula:'252→198→54→36→18→0,  gcd=18'},
+   {title:'LCM and simplifying fractions', text:'lcm(252,198) = 252×198/18 = 2772. And 252/198 simplifies to 14/11 (divide both by 18).', formula:'lcm = 252×198/18 = 2772,   252/198 = 14/11'}
+  ]}
+ ],
+ m5:[
+  {t:'floor, ceil, trunc and round', steps:[
+   {title:'floor: always rounds DOWN', text:'floor(-2.3) = -3 because -3 is the next integer DOWN the number line from -2.3. For positive numbers, floor just drops the decimal.', formula:'floor(-2.3) = -3,  floor(2.7) = 2'},
+   {title:'ceil: always rounds UP', text:'ceil(-2.3) = -2 because -2 is the next integer UP the number line from -2.3. Use ceil when you need "enough of something" (buses, cartons, pages).', formula:'ceil(-2.3) = -2,  ceil(2.3) = 3'},
+   {title:'trunc vs round', text:'trunc always drops the decimal towards zero: trunc(-2.3) = -2 (not -3). round goes to nearest integer: round(2.5) = 2 because Python rounds halves to even numbers.', formula:'trunc(-2.3) = -2,  round(2.5) = 2 (rounds to even)'}
+  ]},
+  {t:'Floating point and isclose', steps:[
+   {title:'Why 0.1 + 0.2 ≠ 0.3', text:'Computers store numbers in binary (base 2). Just like 1/3 = 0.333... in decimal, 0.1 in binary is 0.0001100110011... — it never ends. So Python stores a rounded version, causing tiny errors.', formula:'0.1 + 0.2 = 0.30000000000000004  (not exactly 0.3)'},
+   {title:'Never use == for decimals', text:'0.1 + 0.2 == 0.3 returns False because of this rounding error. The difference is about 5.6×10⁻¹⁷ — too small to matter mathematically but enough to fail ==.', formula:'0.1 + 0.2 == 0.3  →  False'},
+   {title:'Use isclose instead', text:'math.isclose(a,b) returns True if |a-b| is smaller than the tolerance (default: 1 part in 10⁹). It treats 0.1+0.2 and 0.3 as equal because the difference is far below that threshold.', formula:'isclose(0.1+0.2, 0.3)  →  True'}
+  ]},
+  {t:'isclose: relative vs absolute tolerance', steps:[
+   {title:'Relative tolerance (default)', text:'rel_tol=1e-9 means: are a and b within 1 part per billion of each other? For most numbers this works perfectly.', formula:'isclose(a,b): checks |a-b| < 1e-9 × max(|a|,|b|)'},
+   {title:'Problem with zero', text:'When b=0, relative tolerance fails: 0.000001 relative to 0 is infinite. isclose(1e-10, 0) returns False even though the number is tiny.', formula:'isclose(1e-10, 0)  →  False  (relative to 0 is undefined)'},
+   {title:'Use abs_tol for zero comparisons', text:'abs_tol sets an absolute threshold regardless of size. isclose(1e-10, 0, abs_tol=1e-9) returns True because 1e-10 < 1e-9.', formula:'isclose(1e-10, 0, abs_tol=1e-9)  →  True'}
+  ]}
+ ],
+ m6:[
+  {t:'sinh, cosh, tanh', steps:[
+   {title:'What are hyperbolic functions?', text:'sinh and cosh are built from eˣ and e⁻ˣ. They behave like sin and cos but for hyperbolas instead of circles. tanh = sinh/cosh, just like tan = sin/cos.', formula:'sinh(x) = (eˣ − e⁻ˣ)/2,  cosh(x) = (eˣ + e⁻ˣ)/2'},
+   {title:'Values at x=1.2', text:'At x=1.2: sinh≈1.5095, cosh≈1.8107, tanh≈0.8337. Notice cosh > sinh always (because eˣ+e⁻ˣ > eˣ−e⁻ˣ for positive x), and tanh is always between -1 and 1.', formula:'sinh(1.2)≈1.5095,  cosh(1.2)≈1.8107,  tanh(1.2)≈0.8337'},
+   {title:'Capacitor charging', text:'A capacitor charges following 1−e⁻ⁿ where n is the number of time constants. After 1 RC: 63.2%. After 2 RC: 86.5%. It approaches 100% but never reaches it exactly.', formula:'charge% = (1 − e⁻ⁿ) × 100%'}
+  ]},
+  {t:'Hyperbolic identity cosh²−sinh²=1', steps:[
+   {title:'The identity', text:'cosh²x − sinh²x = 1 for every value of x. This is the hyperbolic equivalent of cos²θ + sin²θ = 1. It is used in catenary (hanging cable) and transmission line problems.', formula:'cosh²(x) − sinh²(x) = 1  for all x'},
+   {title:'Verification at x=1', text:'cosh(1)≈1.5431, sinh(1)≈1.1752. So 1.5431² − 1.1752² = 2.3812 − 1.3811 = 1.0001 ≈ 1 (small difference is floating point rounding).', formula:'1.543081² − 1.175201² = 3.762196 − 1.381099 ≈ 1'}
+  ]},
+  {t:'Radioactive decay and half-life', steps:[
+   {title:'Decay formula', text:'N = N₀ × e^(−kt) where N₀ is the initial amount, k is the decay constant, and t is time. The amount decreases exponentially.', formula:'N(t) = N₀ × e^(−kt)'},
+   {title:'Half-life formula', text:'At the half-life T½, N = N₀/2. So e^(−k×T½) = 1/2, which gives T½ = ln(2)/k. For k=0.1: T½ = 0.6931/0.1 = 6.93 time units.', formula:'T½ = ln(2) / k'},
+   {title:'Decay sequence', text:'Starting at 1000, after each half-life the amount halves: 1000 → 500 → 250 → 125. This geometric halving is the characteristic of exponential decay.', formula:'1000 → 500 → 250 → 125 (each step = one half-life)'}
+  ]}
+ ],
+ m7:[
+  {t:'isclose, dist, prod and inf', steps:[
+   {title:'isclose: 0.1+0.2 vs 0.3', text:'The difference |0.1+0.2−0.3| ≈ 5.6×10⁻¹⁷. This is far smaller than isclose\'s default tolerance of 1e-9, so isclose returns True — the two numbers are treated as equal.', formula:'|0.1+0.2−0.3| ≈ 5.6×10⁻¹⁷ < 10⁻⁹  →  isclose = True'},
+   {title:'dist: straight-line distance', text:'math.dist((1,2,3),(4,6,3)) uses the 3D distance formula: √((4-1)²+(6-2)²+(3-3)²) = √(9+16+0) = √25 = 5.0.', formula:'√((4-1)² + (6-2)² + (3-3)²) = √25 = 5'},
+   {title:'prod: multiply all items', text:'math.prod([1,2,3,4,5]) multiplies every number in the list: 1×2×3×4×5 = 120. This is the same as 5! (5 factorial).', formula:'prod([1,2,3,4,5]) = 1×2×3×4×5 = 120 = 5!'}
+  ]},
+  {t:'Fixed-point iteration: x = cos x', steps:[
+   {title:'What is fixed-point iteration?', text:'We want to solve x = cos(x). Start with a guess x=1, compute cos(1), use that as the new x, repeat. Each step gets closer to the solution.', formula:'x_new = cos(x_old),  repeat until x_new ≈ x_old'},
+   {title:'Stopping condition', text:'Stop when isclose(x_new, x, abs_tol=1e-8) is True — meaning the answer has stabilised to 8 decimal places. This is better than stopping after a fixed number of steps.', formula:'stop when |x_new − x| < 1e-8'},
+   {title:'The root', text:'The solution x ≈ 0.739085 is the unique point where cos(x) = x, known as the Dottie number. It takes about 80 iterations to converge.', formula:'cos(0.739085) ≈ 0.739085'}
+  ]},
+  {t:'Perimeter of a triangle using dist', steps:[
+   {title:'Distance formula', text:'math.dist(P, Q) gives the Euclidean distance between two points. For 2D: √((x2-x1)²+(y2-y1)²). It works for any number of dimensions.', formula:'dist(P,Q) = √((x₂-x₁)² + (y₂-y₁)²)'},
+   {title:'Three sides', text:'P=(1,2), Q=(4,6), R=(7,2). PQ = √(9+16) = 5, QR = √(9+16) = 5, PR = √(36+0) = 6.', formula:'PQ=5,  QR=5,  PR=6'},
+   {title:'Perimeter', text:'Perimeter = PQ + QR + PR = 5 + 5 + 6 = 16 units.', formula:'perimeter = 5 + 5 + 6 = 16'}
+  ]}
+ ]
+};
+
+function openExplain(mod, idx){
+  const data = EXPLAIN[mod] && EXPLAIN[mod][idx];
+  if(!data) return;
+  document.getElementById('epTitle').textContent = 'Explain: ' + data.t;
+  const body = document.getElementById('epBody');
+  body.innerHTML = data.steps.map((s,i) => `<div class="estep"><div class="estep-num">${i+1}</div><div class="estep-body"><div class="estep-title">${s.title}</div><div class="estep-text">${s.text}</div>${s.formula ? `<code class="estep-formula">${s.formula}</code>` : ''}</div></div>`).join('');
+  document.getElementById('epPanel').classList.add('open');
+  document.getElementById('epScrim').classList.add('open');
+}
+function closeExplain(){
+  document.getElementById('epPanel').classList.remove('open');
+  document.getElementById('epScrim').classList.remove('open');
+}
+document.getElementById('epClose').addEventListener('click', closeExplain);
+document.getElementById('epScrim').addEventListener('click', closeExplain);
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeExplain(); });
 function go(i){ setMenu(false); stopAnims(); if (document.fullscreenElement) document.exitFullscreen(); cur = Math.max(0, Math.min(PAGES.length - 1, i)); tab = 'learn'; slide = 0; if (PAGES[cur].sec) openSec = PAGES[cur].sec.id; renderSide(); const P = PAGES[cur]; P.home ? renderHome() : P.summary ? renderSummary() : P.quiz ? renderQuiz() : P.l.practice ? renderPractice() : renderLesson(); window.scrollTo(0, 0); }
 
 /* ================= reusable blocks ================= */
@@ -5336,7 +5495,7 @@ function renderLesson(){
   <section class="pane" id="p-run">
     ${qnav('run', EX.map(e => e.t))}
     <div class="card"><p class="intro"><b>Run</b> shows the output. <b>Trace step by step</b> runs one line at a time so you can watch every variable and list change in memory. Edit the code freely.</p>
-    ${EX.map((e, j) => `<div class="qitem" data-g="run" data-j="${j}"><h3 class="qh">Example ${j + 1} · ${e.t}</h3>${e.maths ? `<div class="mathbox"><div class="mlab">The maths</div>${worked(e.maths)}</div>` : ''}<div id="exBlock${j}"></div></div>`).join('')}
+    ${EX.map((e, j) => `<div class="qitem" data-g="run" data-j="${j}"><h3 class="qh">Example ${j + 1} · ${e.t}</h3>${e.maths ? `<div class="mathbox"><div class="mlab" style="display:flex;align-items:center;justify-content:space-between">The maths<button class="explain-btn" onclick="openExplain('${l.id}',${j})">💡 Explain this</button></div>${worked(e.maths)}</div>` : ''}<div id="exBlock${j}"></div></div>`).join('')}
     </div>
   </section>
 
