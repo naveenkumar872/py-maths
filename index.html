@@ -3257,13 +3257,15 @@ else:
  notes:'About 12 minutes. The single most important point: math.sin and friends work in radians. Show math.sin(30) giving −0.988 and let the class find the reason. Then use trigonometry for harmonic analysis, a standard Fourier-series exam question.',
  slides:[
   {lv:'b', k:'Radians', t:'Python\'s trigonometry uses radians', b:`
+   <p class="intro">Python measures angles in radians, not degrees — 30 radians is nearly 5 full rotations, which is why <code>math.sin(30)</code> gives −0.988 instead of 0.5.</p>
    <div class="cols"><div>${lab('Wrong')}${cb(`import math
 print(math.sin(30))      # -0.988`)}</div>
    <div>${lab('Right')}${cb(`import math
 print(math.sin(math.radians(30)))   # 0.5`)}</div></div>
    <p class="big">Convert with <code>math.radians(degrees)</code> going in, and <code>math.degrees(radians)</code> coming out.</p>`},
   {lv:'r', k:'See it happen', t:'Height of a tower from the angle of elevation', b: anim('height')},
-  {lv:'b', k:'The functions', t:'Trigonometric functions in the math module', b:
+  {lv:'b', k:'The functions', t:'Trigonometric functions in the math module', b:`
+   <p class="intro">sin θ = opposite/hypotenuse, cos θ = adjacent/hypotenuse, tan θ = opposite/adjacent — the same ratios from your right-triangle problems.</p>` +
    tbl(['Mathematics','Python'],[
     ['sin θ, cos θ, tan θ (θ in degrees)','<code>math.sin(math.radians(θ))</code>, …'],
     ['sin⁻¹x, cos⁻¹x, tan⁻¹x (in degrees)','<code>math.degrees(math.asin(x))</code>, …'],
@@ -3271,6 +3273,7 @@ print(math.sin(math.radians(30)))   # 0.5`)}</div></div>
     ['r = √(x² + y²)','<code>math.hypot(x, y)</code>'],
     ['π radians = 180°','<code>math.radians(180)</code> = math.pi']])},
   {lv:'b', k:'Checking identities', t:'Test an identity at many angles', b:`
+   <p class="intro">An identity like sin 2θ = 2 sin θ cos θ should be true for every angle — this code tests it at six angles at once and uses <code>isclose</code> instead of <code>==</code> because Python's π is slightly rounded.</p>
    ${cb(`import math
 for d in [0, 30, 45, 60, 90, 135]:
     t = math.radians(d)
@@ -3278,13 +3281,15 @@ for d in [0, 30, 45, 60, 90, 135]:
     rhs = 2 * math.sin(t) * math.cos(t)
     print(d, math.isclose(lhs, rhs, abs_tol=1e-12))`)}
    <p class="big">A quick way for students to check a formula before trying to prove it.</p>`},
-  {lv:'b', k:'Common mistakes', t:'What goes wrong, and why', b:
+  {lv:'b', k:'Common mistakes', t:'What goes wrong, and why', b:`
+   <p class="intro">Every mistake here comes from the same thing: forgetting Python works in radians.</p>` +
    tbl(['You write','What happens'],[
     ['<code>math.sin(30)</code>','30 radians, not degrees: −0.988'],
     ['<code>math.sin(math.pi) == 0</code>','False! It is 1.2e-16 because π is rounded. Use math.isclose'],
     ['<code>math.asin(2)</code>','ValueError: math domain error (|x| must be ≤ 1)'],
     ['<code>math.atan(y / x)</code> for x &lt; 0','Wrong quadrant; use math.atan2(y, x)']])},
   {lv:'a', k:'Advanced', t:'Polar and Cartesian coordinates', b:`
+   <p class="intro">Polar form (r, θ) describes a point by its distance and angle instead of x and y — radar and GPS use this.</p>
    ${cb(`import math
 x, y = -3, 4
 r = math.hypot(x, y)                      # 5.0
@@ -3292,6 +3297,7 @@ theta = math.degrees(math.atan2(y, x))    # 126.87 deg (second quadrant)
 print(r, round(theta, 2))
 print(round(r * math.cos(math.radians(theta)), 6), round(r * math.sin(math.radians(theta)), 6))`)}`},
   {lv:'a', k:'Advanced', t:'Fourier series: building a square wave', b:`
+   <p class="intro">Any repeating signal can be built by adding sine waves — more terms means a closer match to the original shape.</p>
    ${cb(`import math
 x = math.pi / 2
 for N in [1, 3, 10, 100]:
