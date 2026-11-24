@@ -3382,19 +3382,22 @@ print("Amplitude of the first harmonic:", round(math.hypot(a(1), b(1)), 4))`,
  notes:'About 10 minutes. These are exact integer functions, so the answers match hand working digit for digit. The binomial distribution problem links them to the Probability and Statistics course.',
  slides:[
   {lv:'b', k:'Counting tools', t:'Factorials, combinations and permutations', b:`
+   <p class="intro">factorial gives the number of ways to arrange n things. comb gives the number of ways to choose r from n when order doesn't matter. perm is the same but order matters. gcd finds the largest number that divides both a and b exactly.</p>
    ${cb(`import math
 print(math.factorial(5))    # 120
 print(math.comb(5, 2))      # 10   (5C2: order does not matter)
 print(math.perm(5, 2))      # 20   (5P2: order matters)
 print(math.gcd(84, 120), math.lcm(84, 120))   # 12 840`)}`},
   {lv:'r', k:'See it happen', t:'How many ways? Counting with comb', b: anim('committee')},
-  {lv:'b', k:'Maths and Python', t:'Counting formulas', b:
+  {lv:'b', k:'Maths and Python', t:'Counting formulas', b:`
+   <p class="intro">These are the same formulas from your permutations and combinations chapter — Python just computes them in one line without manual multiplication.</p>` +
    tbl(['Mathematics','Python'],[
     ['n!','<code>math.factorial(n)</code>'],
     ['ⁿCᵣ = n! / (r!(n − r)!)','<code>math.comb(n, r)</code>'],
     ['ⁿPᵣ = n! / (n − r)!','<code>math.perm(n, r)</code>'],
     ['gcd(a, b), lcm(a, b)','<code>math.gcd(a, b)</code>, <code>math.lcm(a, b)</code>']])},
   {lv:'b', k:'Binomial theorem', t:'Rows of Pascal\'s triangle', b:`
+   <p class="intro">Pascal's triangle gives the coefficients of (a + b)ⁿ — the numbers you use when expanding brackets. Row 2 is 1 2 1, so (a+b)² = a² + 2ab + b². Python prints every row in one loop.</p>
    ${cb(`import math
 for n in range(6):
     print([math.comb(n, r) for r in range(n + 1)])`)}
@@ -3405,12 +3408,14 @@ for n in range(6):
     ['<code>math.comb(4, 6)</code>','0: you cannot choose 6 from 4'],
     ['Computing nCr with float division','Rounding errors for large n; math.comb is exact']])},
   {lv:'a', k:'Advanced', t:'The binomial distribution', b:`
+   <p class="intro">P(X = r) = ⁿCᵣ × pʳ × (1−p)ⁿ⁻ʳ gives the probability of exactly r successes in n trials. Here n = 10, p = 0.1 (10% chance each trial) — so P(X=2) means the chance of exactly 2 successes.</p>
    ${cb(`import math
 n, p = 10, 0.1
 P = [math.comb(n, r) * p ** r * (1 - p) ** (n - r) for r in range(n + 1)]
 print(round(P[2], 4), round(sum(P), 6))     # 0.1937  1.0`)}
    <p>P(X = r) = ⁿCᵣ pʳ qⁿ⁻ʳ in one comprehension. The probabilities add up to 1, a useful check.</p>`},
   {lv:'a', k:'Advanced', t:'Stirling\'s approximation', b:`
+   <p class="intro">For very large n, computing n! directly is slow. Stirling's formula gives a close estimate using just square root and powers — the code checks how close it is for different values of n.</p>
    ${cb(`import math
 for n in [5, 10, 20, 50]:
     s = math.sqrt(2 * math.pi * n) * (n / math.e) ** n
