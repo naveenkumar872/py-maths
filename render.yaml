@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: day3-maths-lab
+    runtime: static
+    staticPublishPath: .
+    headers:
+      - path: /vendor/*
+        name: Cache-Control
+        value: public, max-age=604800
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
